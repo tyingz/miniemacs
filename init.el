@@ -165,31 +165,7 @@
   (dashboard-setup-startup-hook)
 
   (setq dashboard-footer-messages '(
-"a tablet a day..."
-"shut up bird"
-"ok, we're good"
-"fuck"
-"nice"
-"jkjk"
-"gold gold gold"
-"how do you copy in emacs?"
-"people don't quit emacs... they just die at some point."
-"emacs cured my autism"
-"emacs cured my autism"
-"emacs has a package for that"
-"blimpy blimpy blimpy"
-"it keeps crashing"
-"gdb dog"
-"emacs takes a lifetime to learn. so the sooner you start, the longer it will take"
-"if we had asked people what they wanted, they would ask for a faster c++"
-"c--"
-"uwu"
-"but why"
-"abcs&123s"
-"artificial intelligence vs natural stupidity"
-"fuck you"
 "good morning"
-"welcome in motherfucker"
 ))
 
   (setq dashboard-items '(

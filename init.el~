@@ -86,7 +86,7 @@
     "i"  'org-download-clipboard
     "g l"  'ee-lazygit
 
-    "SPC"  'org-toggle-checkbox
+    "SPC"  'counsel-M-x
 
     "TAB"  'org-fold-hide-subtree
     "c d"  'mi-copiar-path-con-cd
