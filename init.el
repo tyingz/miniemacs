@@ -14,7 +14,10 @@
 
 
 
-(load-theme 'doom-acario-dark t)
+(use-package doom-themes
+  :ensure t
+  :config
+  (load-theme 'doom-acario-dark t))
 
 (global-set-key (kbd "C-=") 'text-scale-increase)
 (global-set-key (kbd "C--") 'text-scale-decrease)
