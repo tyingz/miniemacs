@@ -306,11 +306,13 @@
 
 ; --- DASHBOARD INICIO---
 
-(with-eval-after-load 'ibuffer
-  (dolist (regexp '("\\*dashboard\\*"
-                    "\\*Messages\\*"
-                    "\\*Compile-Log\\*"))
-    (add-to-list 'ibuffer-never-show-predicates regexp)))
+;; (with-eval-after-load 'ibuffer
+;;   (dolist (regexp '("\\*dashboard\\*"
+;;                     "\\*Messages\\*"
+;;                     "\\*Compile-Log\\*"))
+;;     (add-to-list 'ibuffer-never-show-predicates regexp)))
+;; ta medio bug esto 
+;; ta medio bug esto 
 
 (use-package dashboard
   :ensure t
