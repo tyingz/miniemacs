@@ -545,11 +545,11 @@
 
 ;; # Crear el entorno
 ;; ```
-;; python -m venv .venv
+;; python3 -m venv .venv
 ;; ```
 ;; # Activar el entorno
 ;; ```
-;; .venv\Scripts\Activate.ps1
+;; source .venv/bin/activate
 ;; ```
 ;; # Librerias
 ;; ```
