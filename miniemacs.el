@@ -12,37 +12,62 @@
 
 
 
-;; linux
 ;; (use-package exec-path-from-shell
 ;;   :ensure t
 ;;   :config
 ;;   ;; Define aquí las variables adicionales que necesites copiar
 ;;   (dolist (var '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO" "LANG" "LC_CTYPE"))
 ;;     (add-to-list 'exec-path-from-shell-variables var))
-  ;; Inicializa el paquete solo si estás en entorno gráfico o en un daemon
-  ;; (when (or (daemonp) (memq window-system '(mac ns x)))
-  ;;   (exec-path-from-shell-initialize)))
-;; linux
 
-
-;; esto capaz va en windows
-;; (when (eq system-type 'windows-nt)
-;;   ;; Agregar carpetas al PATH interno de Emacs
-;;   (add-to-list 'exec-path "C:/Program Files/Git/bin")
-;;   (add-to-list 'exec-path "C:/tools/bin")
-;;   ;; Sincronizar con la variable PATH del sistema operativo
-;;   (setenv "PATH" (concat "C:\\Program Files\\Git\\bin;"
-;;                          "C:\\tools\\bin;"
-;;                          (getenv "PATH"))))
-;; esto capaz va en windows
+;;   ;; Inicializa el paquete solo si estás en entorno gráfico o en un daemon
+;;   (when (or (daemonp) (memq window-system '(mac ns x)))
+;;     (exec-path-from-shell-initialize)))
 
 
 
 ;;; --- ESTETICA INICIO ---
+(add-to-list 'default-frame-alist '(font . "Fira Code NerdFont-12"))
+
+
+;;(load-theme 'deeper-blue t)
+
+(use-package gruber-darker-theme)
+;(load-theme 'gruber-darker t)
+
+;;(load-theme 'doom-gruvbox t)
+
+;;(load-theme 'doom-manegarm t)
 
 (use-package doom-themes
   :ensure t)
 
+;;(load-theme 'doom-acario-dark t)
+;(load-theme 'doom-oceanic-next t)
+
+(use-package year-1984-theme :ensure t)
+
+
+(use-package ef-themes
+  :ensure t)
+;; estos son lo que usa (lcolonq)
+;; ef-duo-dark esta goated 
+;; ef-tritanopia-dark goated2
+;; ef-autumn (este con el cafe en dashboard se ve bien)
+
+(setq ef-themes-common-palette-overrides
+      '((border-mode-line-active unspecified)
+        (border-mode-line-inactive unspecified)))
+
+(use-package naysayer-theme
+  :ensure t)
+
+;; --- profiles----
+
+(load-theme 'gruber-darker t)
+
+
+
+;; --- profiles----
 
 
 (global-set-key (kbd "C-=") 'text-scale-increase)
@@ -69,6 +94,12 @@
 (setq-default truncate-lines t) ;; wrap
 
 
+
+;;; ORG STUFF
+
+;;; --- ESTETICA FINAL ---
+
+
 ;;; ---- EVIL MODE inicio ---
 
 (defun mi-copiar-path-con-cd ()
@@ -84,12 +115,45 @@
           (message "Copiado: %s" cd-path))
       (message "Este buffer no está asociado a ningún archivo."))))
 
+(defun my-open-todo () 
+  (interactive)
+  (find-file "~/orgVault/Emacs/toDO/11toDO.org")
+  (funcall-interactively 'evil-edit-maybe)) ;; Ajusta si necesitas nvim específico
+
 
 (setq evil-want-keybinding nil)
 (use-package evil
   :init (evil-mode 1)
   :config
 )
+
+(defun mi-counsel-fzf-config ()
+  "Ejecuta counsel-fzf en ~/.config excluyendo BraveSoftware y discord 
+sin alterar la variable globalmente."
+  (interactive)
+  (let ((counsel-fzf-cmd "find ~/.config -not -path '*/BraveSoftware*' -not -path '*/discord*' -type f | fzf -f \"%s\""))
+    (counsel-fzf)))
+
+(defun mi-counsel-fzf-all ()
+  "Ejecuta counsel-fzf desde ~/ excluyendo archivos y directorios ocultos."
+  (interactive)
+  (let ((counsel-fzf-cmd
+         "fdfind --type f --hidden --exclude '.*' . ~ | fzf -f \"%s\""))
+    (counsel-fzf)))
+
+(defun mi-counsel-fzf-dirs ()
+  "Ejecuta counsel-fzf para buscar únicamente directorios globalmente."
+  (interactive)
+  (let ((counsel-fzf-cmd "fdfind --type d --hidden --exclude '.*' . ~ | fzf -f \"%s\""))
+    (counsel-fzf)))
+
+(ee-define "ee-visidata" 
+  default-directory 
+  (ee-script-path "eee-vd.sh") 
+  (list (or buffer-file-name (ee-region-text))) 
+  ee-jump-from)
+
+
 
 (use-package evil-leader
   :config
@@ -100,19 +164,12 @@
     ;;"f f"'ee-find
     ;;"f g"'grep-find
     ;; "f b"  (lambda() (interactive) (list-buffers)(delete-window))
-     "f b"  'ibuffer
-    "k"  'kill-buffer
+    "f b"  'ibuffer
     "w"  'save-buffer
     "m"  (lambda() (interactive) (math-preview-all)(org-display-inline-images))
     ","  (lambda() (interactive) (math-preview-clear-all)(org-remove-inline-images))
 
 
-    ;; RANDOMIZER DE SKELETONS
-    ;; "d" (lambda () 
-    ;;     (interactive)
-    ;;     (setq dashboard-startup-banner (my/dashboard-random-skeleton))
-    ;;     (dashboard-refresh-buffer))
-    ;; RANDOMIZER DE SKELETONS
 
     "d"  'dashboard-open
     ;;"e"  'dirvish
@@ -133,7 +190,7 @@
 
     "h"  'counsel-esh-history
     "f g" 'counsel-rg
-    "f f" 'counsel-fzf ;quiero probar un poco en vez de ee-find para ver que tan rapido es este, parece ir bien
+    "f f" 'counsel-fzf
     "f F" 'ee-find
     "c t" 'cambiar-tema
     "c f" 'counsel-fonts
@@ -151,7 +208,19 @@
                         (other-window 1)
                         (switch-to-buffer buffer))
     ;;"P" 'dired-preview-global-mode
-  ))
+
+    ;; "t" 'tab-new
+    ;; "j" (lambda () (interactive) (tab-bar-select-tab 1))
+    ;; "k" (lambda () (interactive) (tab-bar-select-tab 2))
+    ;; "l" (lambda () (interactive) (tab-bar-select-tab 3))
+    ;; ";" (lambda () (interactive) (tab-bar-select-tab 4))
+    ;; "'" (lambda () (interactive) (tab-bar-select-tab 5))
+    ;; "c t" 'tab-close
+
+    )
+
+  )
+
 
 (use-package evil-escape
   :config
@@ -207,9 +276,11 @@
 
   (evil-define-key 'normal 'global (kbd "J") (lambda () (interactive) (evil-next-line 6)))
   (evil-define-key 'normal 'global (kbd "K") (lambda () (interactive) (evil-previous-line 6)))
-
   (evil-define-key 'visual 'global (kbd "J") (lambda () (interactive) (evil-next-visual-line 6)))
   (evil-define-key 'visual 'global (kbd "K") (lambda () (interactive) (evil-previous-visual-line 6)))
+
+  (evil-define-key 'normal 'global (kbd "$") 'evil-end-of-visual-line)
+  (evil-define-key 'visual 'global (kbd "$") 'evil-end-of-visual-line)
 
   (evil-define-key 'normal 'global (kbd "M") 'other-window)
   
@@ -240,7 +311,8 @@
 
   (evil-define-key '(normal visual motion) 'global
     "J" 'my-next-visual-line-6
-    "K" 'my-prev-visual-line-6)
+    "K" 'my-prev-visual-line-6
+    )
 
 
   (evil-define-key 'visual evil-surround-mode-map "Z" 'evil-surround-region)
@@ -282,6 +354,7 @@
       (interactive)
       (when (= (count-windows) 2)
         (other-window 1)
+
         (forward-line -1)
         (condition-case nil
             (execute-kbd-macro (kbd "RET"))
@@ -289,9 +362,12 @@
            (other-window -1))))))
   ;; este es un buen combo
   ;; este es un buen combo
-  ;; igual parece ser mejor usar ivy y simplemente usar M para ir switcheando, pero si grepeas esta opcion no esta mal
-  ;; y si queres ir en dired a files mp4 o algo asi podes usar ivy y luego dar enter y n n n n n n n n 
+  ;; es mejor usar ivy aceptar con L y volver con H moviendote con J y K
 
+
+    (evil-define-key 'normal 'global (kbd "H") 'ivy-resume)
+    (evil-define-key 'visual 'global (kbd "g c") 'comment-region)
+    (evil-define-key 'visual 'global (kbd "g u") 'uncomment-region)
 
   )
 
@@ -300,27 +376,61 @@
   (add-to-list 'evil-escape-inhibit-functions
                (lambda () (derived-mode-p 'ibuffer-mode))))
 
+(with-eval-after-load 'ibuffer
+  (evil-define-key 'normal ibuffer-mode-map (kbd "L") 'ibuffer-visit-buffer)
+  )
+
 ;;; ---- EVIL MODE end ---
 
+;; ============ COMPILATION MODE INICIO ==============
 
+(defun mi/compilation-enable-input ()
+  "Hace que el buffer de compilación acepte input."
+  (read-only-mode -1)
+  (comint-mode))
+
+(defun mi/compilation_interactive ()
+  "Permite enviar input al buffer de compilación."
+  (interactive)
+  (mi/compilation-enable-input)
+  (evil-define-key 'insert 'local (kbd "RET") #'comint-send-input)
+  (evil-define-key 'insert 'local (kbd "<return>") #'comint-send-input))
+
+(defun mi/compilation-interactive-and-insert ()
+  "Activa el modo interactivo y entra en Insert."
+  (interactive)
+  (mi/compilation_interactive)
+  (evil-insert-state))
+
+(defun mi/compilation-paste ()
+  "Activa el modo interactivo y pega sin entrar en Insert."
+  (interactive)
+  (mi/compilation-enable-input)
+  (evil-paste-after 1)
+  (evil-normal-state)
+  )
+
+(with-eval-after-load 'compile
+  (with-eval-after-load 'evil
+    (evil-define-key '(normal motion) compilation-mode-map
+      "i" #'mi/compilation-interactive-and-insert
+      "p" #'mi/compilation-paste)))
+
+
+;; ============ COMPILATION MODE END ==============
 
 ; --- DASHBOARD INICIO---
 
-;; (with-eval-after-load 'ibuffer
-;;   (dolist (regexp '("\\*dashboard\\*"
-;;                     "\\*Messages\\*"
-;;                     "\\*Compile-Log\\*"))
-;;     (add-to-list 'ibuffer-never-show-predicates regexp)))
-;; ta medio bug esto 
-;; ta medio bug esto 
+
 
 (use-package dashboard
   :ensure t
   :config
   (dashboard-setup-startup-hook)
 
+
   (setq dashboard-footer-messages '(
-"good morning"
+"welcomeee:0"
 ))
 
   (setq default-directory "~/")
@@ -339,7 +449,10 @@
   ; Ocultar barra de herramientas/menú si el dashboard está activo
   (setq dashboard-center-content t)
   (setq dashboard-vertically-center-content t)
+
+  (evil-define-key 'normal dashboard-mode-map (kbd "c") 'calendar)
   )
+
 
 
 ; --- DASHBOARD END ----
@@ -348,10 +461,14 @@
 
 ;; ; -- DIRED INICIO --- 
 
-
-
 (setq dired-recursive-copies 'always)
 (setq dired-recursive-deletes 'always)
+
+(defun my-dired-open-with-mpv ()
+  "Abre el archivo bajo el cursor con mpv de forma limpia."
+  (interactive)
+  (let ((file (dired-get-filename)))
+    (start-process "mpv-process" nil "mpv" "--force-window" file)))
 
 (setq delete-by-moving-to-trash t)
 
@@ -371,18 +488,34 @@
 
     (kbd "q") 'kill-current-buffer
 
+    (kbd "g t") (lambda () (interactive) (find-file "~/1NOTAS/mainNotes/11toDO.md"))
     (kbd "h") 'dired-up-directory
-
-    (kbd "l") 'dired-find-alternate-file
-    (kbd "o") 'dired-find-alternate-file
-
+    ;;(kbd "l") 'dired-find-alternate-file
+    (kbd "l")
+    (lambda () (interactive)
+      (let ((file (dired-get-filename)))
+        (if (string-match-p "\\.\\(mp4\\|mkv\\|avi\\|mov\\|webm\\)$" (downcase file))
+            (my-dired-open-with-mpv)
+          (dired-find-alternate-file))))
     (kbd "J") (lambda () (interactive) (dired-next-line 5))
     (kbd "K") (lambda () (interactive) (dired-previous-line 5))
     (kbd ".") 'dired-omit-mode
     (kbd "W") 'wdired-change-to-wdired-mode
 
+    (kbd "o")
+    (lambda () (interactive)
+      (let ((file (dired-get-filename)))
+        (if (string-match-p "\\.\\(mp4\\|mkv\\|avi\\|mov\\|webm\\)$" (downcase file))
+            (my-dired-open-with-mpv)
+          (dired-find-alternate-file))))
 
     (kbd "M") 'other-window
+    ;; (kbd "M-m") 'other-window
+    ;; (kbd "M-f") 'my/accept-and-delete-other-windows
+    ;; (kbd "M-j") #'evil-window-down
+    ;; (kbd "M-k") #'evil-window-up
+    ;; (kbd "M-l") #'evil-window-right
+    ;; (kbd "M-h") #'evil-window-left
 
     (kbd "Y") 'dired-do-copy
     (kbd "y") 'dired-ranger-copy
@@ -390,6 +523,7 @@
     (kbd "p") 'dired-ranger-paste
 
     (kbd "t") 'compile
+    (kbd "T") #'my-compile-history
 
     (kbd "P") 'media-thumbnail-dired-mode
 
@@ -401,6 +535,7 @@
     (kbd "c a") 'my/dired-copy-files-as-uri-list
 
     (kbd "a") 'find-file
+
     )
   )
 
@@ -420,142 +555,55 @@
 (add-hook 'dired-mode-hook #'hl-line-mode)
 
 
+;; (use-package dired-preview
+;;   :ensure t
+;;   :config
+;;     (setq dired-preview-delay 0.1)
+;;     (setq dired-preview-display-action-alist
+;;         '((display-buffer-in-side-window)
+;;             (side . right)
+;;             (window-width . 0.4)
+;;             ;(preserve-size . (t . t))))
+;;             (preserve-size . (nil . nil))))
+;;   )
+
+;; (add-hook 'dired-mode-hook 'dired-hide-details-mode)
+
 ;; ; -- DIRED FINAL --- 
 
 
-;; ---- PDF ------------
-(use-package pdf-tools
+
+;; -------------------LSP(sin lsp lol)---------------------
+
+(use-package cape
   :ensure t
-  :mode ("\\.pdf\\'" . pdf-view-mode) ; Que todos los PDF abran con esto
-  :config
-  ;; Inicializa el servidor de poppler
-  (pdf-tools-install)
-
-  ;; Comportamiento por defecto
-  (setq-default pdf-view-display-size 'fit-page)
-  (setq pdf-view-resize-factor 1.1)
-
-  (add-hook 'pdf-view-mode-hook
-            (lambda ()
-              (pdf-view-midnight-minor-mode 1) 
-              (display-line-numbers-mode -1)   
-              (blink-cursor-mode -1)           
-              (auto-revert-mode 1)))           
-
-
-  (with-eval-after-load 'evil
-    (evil-define-key 'normal pdf-view-mode-map
-      ;; Navegación básica suave (1 línea)
-      "h" 'pdf-view-scroll-left
-      "l" 'pdf-view-scroll-right
-      
-      ;; Navegación rápida (6 líneas)
-      "j" (lambda () (interactive) (pdf-view-next-line-or-next-page 4))
-      "k" (lambda () (interactive) (pdf-view-previous-line-or-previous-page 4))
-
-      "J" (lambda () (interactive) (pdf-view-next-line-or-next-page 10))
-      "K" (lambda () (interactive) (pdf-view-previous-line-or-previous-page 10))
-
-      "d" (lambda () (interactive) (pdf-view-next-line-or-next-page 20))
-      "u" (lambda () (interactive) (pdf-view-previous-line-or-previous-page 20))
-      
-      ;; Saltos de página
-      (kbd "C-f") 'pdf-view-next-page
-      (kbd "C-b") 'pdf-view-previous-page
-      (kbd "g g") 'pdf-view-first-page
-
-      (kbd "D") 'pdf-view-next-page
-      (kbd "U") 'pdf-view-previous-page
-
-      "G" 'pdf-view-last-page
-
-      (kbd "g p") 'pdf-view-goto-page
-
-      ;; Zoom y Ajustes
-      "a" 'pdf-view-fit-page-to-window
-      "s" 'pdf-view-fit-width-to-window
-      "+" 'pdf-view-enlarge
-      "=" 'pdf-view-enlarge
-      "-" 'pdf-view-shrink
-      "0" 'pdf-view-scale-reset
-
-
-      ;; Utilidades de Zathura
-      "i" 'pdf-view-midnight-minor-mode  ; Toggle para invertir colores
-      "r" 'pdf-view-revert-buffer        ; Forzar recarga
-      "/" 'isearch-forward
-      "n" 'isearch-repeat-forward
-      "N" 'isearch-repeat-backward
-      "i" 'pdf-view-midnight-minor-mode  ; Toggle para invertir colores
-      )
-    )
-)            ; Búsqueda de texto incremental
-;; ---- PDF END------------
-
-
-
-
-;; -------------------LSP---------------------
-;; Habilitar Corfu globalmente
-(use-package corfu
-  :ensure t
-  :custom
-  (corfu-auto t)                  ;; Autocompletado mientras escribes
-  (corfu-auto-prefix 2)           ;; Mostrar sugerencias a partir de 2 letras
-  (corfu-auto-delay 0.01) ;; <--- Ponlo en 0.0 para respuesta inmediata
-  (corfu-echo-delay 0.01) ;; <--- Elimina el delay del texto de ayuda
   :init
-  (global-corfu-mode 1))
-
-;; Eglot viene incluido en Emacs 29 o superior
-(use-package eglot
-:hook ((c++-mode . eglot-ensure)
-       (python-mode . eglot-ensure)
-       )
-  :config
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  :custom
+  (dabbrev-case-fold-search nil)  ;; Respeta mayúsculas/minúsculas al buscar
+  (dabbrev-case-replace nil)     ;; Desactiva la conversión automática al insertar
   )
 
-(with-eval-after-load 'eglot
-  (evil-define-key 'normal eglot-mode-map (kbd "K") (lambda () (interactive) (evil-previous-line 6))))
-
-(setq eldoc-idle-delay 6) ; Retrasa la consulta de eldoc (por defecto es muy bajo)
-(setq eldoc-echo-area-use-multiline-p nil)
-(setq eglot-autoshutdown t)           ; Apagar el servidor cuando no se use el archivo
-
-(setq lsp-ui-doc-enable nil)
-(setq lsp-ui-doc-show-with-cursor nil)
-(setq lsp-ui-doc-show-with-mouse nil)
-(setq lsp-headerline-breadcrumb-enable nil)
-(setq eldoc-echo-area-use-multiline-p nil)
-
-
-;- python enviroment
 (use-package pyvenv
   :ensure t
   :config
   (pyvenv-mode 1))
-;- python enviroment (tenes que indicar el .venv especificamente sino no funciona el pyvenv-activate)
-(with-eval-after-load 'pyvenv
-  (add-hook 'pyvenv-post-activate-hooks
-            (lambda ()
-              ;; Cuando activas un venv, reiniciamos eglot 
-              ;; para que reconozca el nuevo entorno
-              (when (eglot-managed-p)
-                (eglot-reconnect (eglot-current-server))))))
 
+(setq read-process-output-max (* 1024 1024))
+(setq gc-cons-threshold (* 100 1024 1024))
+
+;; powershell usar ps1
 ;; # Crear el entorno
-;; ```
 ;; python -m venv .venv
-;; ```
+
 ;; # Activar el entorno
-;; ```
 ;; .venv\Scripts\Activate.ps1
-;; ```
-;; # Librerias
-;; ```
+
+;; # Actualizar pip e instalar librerías
 ;; pip install --upgrade pip
 ;; pip install magpylib numpy pandas matplotlib scipy
-;; ```
+
 
 ;; -------------------LSP END---------------------
 
@@ -568,6 +616,7 @@
             )
   )
 )
+
 (add-hook 'eshell-mode-hook
           (lambda ()
             (compilation-shell-minor-mode 1)))
@@ -580,7 +629,6 @@
          (abbreviate-file-name (eshell/pwd))
          ;; Añade un salto de línea y el símbolo del prompt
          " $ \n")))
-
 
 
 ;; -------------------  ESHELL  END ---------------------
@@ -637,7 +685,6 @@
   (define-key ivy-minibuffer-map (kbd "C-l") 'ivy-done)
   ;; no uso esto uso los de abajo pero los C-k killean bufers de ivy asi que mejor tenerlo
 
-
   (define-key ivy-minibuffer-map (kbd "J") 'ivy-next-line)
   (define-key ivy-minibuffer-map (kbd "K") 'ivy-previous-line)
   (define-key ivy-switch-buffer-map (kbd "J") 'ivy-next-line)
@@ -653,22 +700,25 @@
   (define-key ivy-reverse-i-search-map (kbd "M")'other-window )
   (define-key ivy-switch-buffer-map (kbd "M")'other-window )
   (define-key ivy-minibuffer-map (kbd "M")'other-window )
+  (define-key ivy-reverse-i-search-map (kbd "P") 'ivy-previous-history-element)
+  (define-key ivy-switch-buffer-map (kbd "P") 'ivy-previous-history-element)
+  (define-key ivy-minibuffer-map (kbd "P") 'ivy-previous-history-element)
+  (define-key ivy-reverse-i-search-map (kbd "N")'ivy-next-history-element )
+  (define-key ivy-switch-buffer-map (kbd "N")'ivy-next-history-element )
+  (define-key ivy-minibuffer-map (kbd "N")'ivy-next-history-element)
 
-
+  (define-key ivy-minibuffer-map (kbd "H") 'minibuffer-keyboard-quit)
+  (define-key ivy-switch-buffer-map (kbd "H") 'minibuffer-keyboard-quit)
+  (define-key ivy-reverse-i-search-map (kbd "H") 'minibuffer-keyboard-quit)
   )
 
 (setq ivy-re-builders-alist
       '((t . ivy--regex-ignore-order)))
 
 
-
-
 ;============IVY================
 
 ;; ====================BARRA DE ESTADO==================
-
-(use-package nerd-icons
-)
 
 (use-package mood-line
   :config
@@ -730,9 +780,10 @@
        (
         (format-time-string "  %I:%M %p "))))
 
+
+
+
 ;; ====================BARRA DE ESTADO=================
-
-
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -740,7 +791,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(media-thumbnail avy evil-surround mood-line year-1984-theme dired-ranger ivy-prescient nerd-icons ivy-rich counsel ivy wolfram pyvenv doom-themes image-mode org-download yasnippets calfw-component evil-leader evil-escape dirvish))
+   '(cape ef-themes naysayer-theme media-thumbnail avy evil-surround mood-line year-1984-theme dired-ranger ivy-prescient nerd-icons ivy-rich counsel ivy wolfram pyvenv doom-themes image-mode org-download yasnippets calfw-component evil-leader evil-escape dirvish))
  '(warning-suppress-types '((comp))))
 
 
