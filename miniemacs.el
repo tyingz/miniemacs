@@ -609,6 +609,13 @@ sin alterar la variable globalmente."
 ;; conda activate mi_entorno
 ;; conda install -c conda-forge magpylib numpy pandas matplotlib scipy pyvisa
 
+;; (use-package conda
+;;   :ensure t
+;;   :config
+;;   ;; (setq conda-anaconda-home "/ruta/a/tu/miniconda3") 
+;;   ;; (setq conda-env-home-directory "/ruta/a/tu/miniconda3/envs")
+;;   (conda-env-initialize-eshell))
+
 
 ;; -------------------LSP END---------------------
 
