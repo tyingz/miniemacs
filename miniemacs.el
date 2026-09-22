@@ -604,6 +604,11 @@ sin alterar la variable globalmente."
 ;; pip install --upgrade pip
 ;; pip install magpylib numpy pandas matplotlib scipy
 
+;; con conda:
+;; conda create --name mi_entorno python=3.11
+;; conda activate mi_entorno
+;; conda install -c conda-forge magpylib numpy pandas matplotlib scipy pyvisa
+
 
 ;; -------------------LSP END---------------------
 
