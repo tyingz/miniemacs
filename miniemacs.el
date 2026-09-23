@@ -147,12 +147,6 @@ sin alterar la variable globalmente."
   (let ((counsel-fzf-cmd "fdfind --type d --hidden --exclude '.*' . ~ | fzf -f \"%s\""))
     (counsel-fzf)))
 
-(ee-define "ee-visidata" 
-  default-directory 
-  (ee-script-path "eee-vd.sh") 
-  (list (or buffer-file-name (ee-region-text))) 
-  ee-jump-from)
-
 
 
 (use-package evil-leader
