@@ -148,6 +148,13 @@ sin alterar la variable globalmente."
     (counsel-fzf)))
 
 
+(defun cambiar-tema ()
+  "Cambia el tema y quita los viejos"
+  (interactive)
+  (let ((tema (completing-read "Elige un tema: " (custom-available-themes))))
+    (mapc #'disable-theme custom-enabled-themes)
+    (load-theme (intern tema) t)))
+
 
 (use-package evil-leader
   :config
@@ -210,6 +217,11 @@ sin alterar la variable globalmente."
     ;; ";" (lambda () (interactive) (tab-bar-select-tab 4))
     ;; "'" (lambda () (interactive) (tab-bar-select-tab 5))
     ;; "c t" 'tab-close
+
+
+    "a j" 'bookmark-set  ;;add jump, go jump, jump
+    "g j" 'list-bookmarks
+    "j" 'bookmark-jump
 
     )
 

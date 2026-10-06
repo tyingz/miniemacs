@@ -220,7 +220,7 @@ sin alterar la variable globalmente."
 
 
     "a j" 'bookmark-set  ;;add jump, go jump, jump
-    "g j" 'list-bookmarks
+    "f j" 'list-bookmarks
     "j" 'bookmark-jump
 
     )
